@@ -28,6 +28,20 @@ io.on('connection', function connection(socket){
     socket.on('joinGame', function(message){
         quizShow.addTeam(new team(message.name, 0, socket.id));
         console.log(socket.id + " is Joining the current Game");
+        // TODO eine Funktion schreiben die handlet, dass die aktuellen Daten an den client gesendet werden.
+    });
+
+    socket.on('reconnect', function(message){
+        const team = quizShow.getTeambyId(socket.id);
+
+        if (team) {
+            // reconnected also muss irgendwie das game zurücksendet werden
+            // TODO gleiches wie oben. Eine funktion die dem Team die aktuellen Daten schickt.
+        }else{
+            socket.send('Beim Reconnecten ist was schief gelaufen. Versuchs doch mal mit einem reload');
+            socket.disconnect(true);
+        }
+        
     });
 });
 

@@ -15,7 +15,6 @@ export class Werbungraten extends React.Component {
         this.submitHandler = this.submitHandler.bind(this);
         this.throwError = this.throwError.bind(this);
         this.joinGame = this.joinGame.bind(this);
-        this.openGameInterface = this.openGameInterface.bind(this);
 
         this.socket = undefined;
     }
@@ -62,6 +61,7 @@ export class Werbungraten extends React.Component {
         that.socket.on('connect', function () {
             console.log("Joining Game")
             that.joinGame();
+            that.setState({isInitialized: true});
         });
 
     }
@@ -76,20 +76,6 @@ export class Werbungraten extends React.Component {
             }
         }else{
             return
-        }
-    }
-
-    openGameInterface(current) {
-        try{
-            if (current) {
-                this.setState({
-                    isIngame: true
-                })
-            }else{
-                console.log("No Game Running")
-            }
-        }catch (e) {
-            this.throwError(e);
         }
     }
 
@@ -109,12 +95,19 @@ export class Werbungraten extends React.Component {
             </>
             )
         }else{
+            if (!isIngame) {
+                
             return(
                 <>
                     <h1>Hallo {teamName}!</h1>
-                    {isIngame ? <p>Geht sofort los</p> : ""}
+                    {!isIngame ? <p>Geht sofort los</p> : <p></p>}
                 </>
             )
+
+            }else{
+               return( <h1>Hier wird das Game UI geladen.</h1> )
+            }
+
         }
     }
 }

@@ -2,6 +2,7 @@ class team {
     constructor(name, pkte, socket) {
         this.name = name;
         this.pkte = pkte;
+        this.socket = socket;
     }
 
     addPoints(points) {

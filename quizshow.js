@@ -37,6 +37,17 @@ const quizShow = {
         return this.questionData[this.currentQuestion]
     },
 
+    getTeambyId: function(id) {
+        const teams = this.activeTeams;
+        let team = teams.map(function(value){
+            value.socket = id ? true : false;
+        });
+        if (team.length > 0) {
+            return team[0];
+        }
+        return false
+    },
+
     getTeams: function() {
         return this.activeTeams
     },
