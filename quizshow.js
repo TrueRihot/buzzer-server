@@ -7,6 +7,8 @@ const quizShow = {
     activeTeams: [],
     // speichert geladenen Fragens
     questionData : [],
+    // experimantal socket promise
+    sockets: [],
 
     // Funktion zum laden der Fragedaten
     fetchData: function() {
@@ -15,16 +17,28 @@ const quizShow = {
     },
 
     // Ein neues Team wird dem Spiel hinzugefügt
-    addTeam: function(team) {
-        console.log('Adding Team ' + team);
-        this.activeTeams = [...this.activeTeams, team];
-    },
+    addTeam: function(newTeam) {
+        const mappedArray =  this.activeTeams.map(function(val){return val.name});
 
-    
+        // Check ob es schon ein Team im Feld mit dem Namen gibt.
+        if (!mappedArray.includes(newTeam.name)) {
+            // gibt dem Team eine unique ID anhand der Platzierung im Team array
+            newTeam.id = this.activeTeams.length;
+            // fügt das neue Team dem Array hinzu.
+            this.activeTeams = [...this.activeTeams, newTeam];
+        }else{
+            throw("Es gibt bereits ein Team mit diesem Namen")
+        }
+        
+    },
 
     // return the current question
     getCurrentQuestion: function() {
         return this.questionData[this.currentQuestion]
+    },
+
+    getTeams: function() {
+        return this.activeTeams
     },
 
     // Methode falls alle bereit sind und gestartet wird
