@@ -9,6 +9,8 @@ app.use(Cors({
     origin: "*"
 }));
 
+quizShow.fetchData();
+
 const server = require('http').createServer(app);
 const Port = 8080;
 
@@ -23,12 +25,17 @@ const io = require('socket.io')(server,{
 io.on('connection', function connection(socket){
     console.log("-------------------------");
     console.log("Ein neuer Client ist connected");
+    console.log("Client ID: " + socket.id);
+    console.log("-------------------------");
     socket.send("Connection zum Server gestartet");
 
     socket.on('joinGame', function(message){
         quizShow.addTeam(new team(message.name, 0, socket.id));
         console.log(socket.id + " is Joining the current Game");
         // TODO eine Funktion schreiben die handlet, dass die aktuellen Daten an den client gesendet werden.
+        console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
+        console.log(quizShow.getCurrentQuestion());
+        socket.emit('loadQuestion',quizShow.getCurrentQuestion());
     });
 
     socket.on('reconnect', function(message){
@@ -46,8 +53,6 @@ io.on('connection', function connection(socket){
 });
 
 app.post("/newteam/:name",(req, res) => {
-    const name = req.params.name;
-    console.log("Füge " + name + " den Teams hinzu");
     try{
         res.status(200).send("Das Team darf angelegt werden")
     }catch(err){

@@ -1,5 +1,6 @@
 import React from 'react';
 import {io} from 'socket.io-client';
+import { GameUI } from './gameUi';
 
 export class Werbungraten extends React.Component {
     constructor(props) {
@@ -7,7 +8,7 @@ export class Werbungraten extends React.Component {
         this.state = {
             isInitialized: false,
             teamName: "",
-            isIngame: false,
+            isIngame: true,
             error: "",
             currentQuestion: {}
         };
@@ -15,6 +16,7 @@ export class Werbungraten extends React.Component {
         this.submitHandler = this.submitHandler.bind(this);
         this.throwError = this.throwError.bind(this);
         this.joinGame = this.joinGame.bind(this);
+        this.submitSocket = this.submitSocket.bind(this);
 
         this.socket = undefined;
     }
@@ -62,13 +64,16 @@ export class Werbungraten extends React.Component {
             console.log("Joining Game")
             that.joinGame();
             that.setState({isInitialized: true});
+            that.socket.on("loadQuestion",function(message) {
+                that.setState({currentQuestion: message})
+            });
         });
 
     }
 
     joinGame() {
         const that = this;
-        if (!this.state.isIngame && this.socket) {
+        if (this.socket) {
             try {
                 this.socket.emit('joinGame',{name:that.state.teamName});
             }catch (e) {
@@ -77,6 +82,10 @@ export class Werbungraten extends React.Component {
         }else{
             return
         }
+    }
+
+    submitSocket(answer) {
+        this.socket.emit('submit',answer);
     }
 
     render() {
@@ -96,7 +105,6 @@ export class Werbungraten extends React.Component {
             )
         }else{
             if (!isIngame) {
-                
             return(
                 <>
                     <h1>Hallo {teamName}!</h1>
@@ -105,7 +113,13 @@ export class Werbungraten extends React.Component {
             )
 
             }else{
-               return( <h1>Hier wird das Game UI geladen.</h1> )
+                console.log(currentQuestion)
+               return( 
+               <>
+               <h1>Team: {teamName}!</h1>
+               <GameUI frage={currentQuestion.question} submitHandler={this.submitSocket}></GameUI>
+               </>
+               )
             }
 
         }

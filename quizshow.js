@@ -12,8 +12,9 @@ const quizShow = {
 
     // Funktion zum laden der Fragedaten
     fetchData: function() {
-       console.log('fetching');
+       console.log('Fetching game data ....');
        this.questionData = [...this.questionData, {question: "Frage", answer: "Antwort"}]
+       console.log(this.questionData.length + " Fragen geladen");
     },
 
     // Ein neues Team wird dem Spiel hinzugefügt
@@ -57,6 +58,7 @@ const quizShow = {
         console.log('The show is beeing started');
         if(!this.isRunning && this.activeTeams.length > 0 && questionData.length > 0) {
             this.isRunning = true;
+            fetchData();
         }else {
             console.log('OOOOps. Entweder läuft die Show schon oder etwas mit den Fragedaten bzw. Teamdaten ist falsch')
         }
