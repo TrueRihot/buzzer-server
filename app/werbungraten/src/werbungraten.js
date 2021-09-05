@@ -61,9 +61,12 @@ export class Werbungraten extends React.Component {
 
         // Connection opened
         that.socket.on('connect', function () {
-            console.log("Joining Game")
+            console.log("Joining Game");
+            // Dem Spiel beitreten
             that.joinGame();
+            // Die Ui wird initialisiert
             that.setState({isInitialized: true});
+            // Wenn eine neue Frage geladen wird, wird sie im state gespeichert.
             that.socket.on("loadQuestion",function(message) {
                 that.setState({currentQuestion: message})
             });
@@ -72,6 +75,7 @@ export class Werbungraten extends React.Component {
     }
 
     joinGame() {
+        // Schickt die Info, dass dem Spiel gejoined werden will plus den teamnamen.
         const that = this;
         if (this.socket) {
             try {
@@ -85,13 +89,15 @@ export class Werbungraten extends React.Component {
     }
 
     submitSocket(answer) {
+        // Frage wird abgeschickt zur aktuellen Frage.
+        answer.questionIndex = this.state.currentQuestion.index;
         this.socket.emit('submit',answer);
     }
 
     render() {
         const {isInitialized, teamName, isIngame, error, currentQuestion} = this.state;
 
-
+        // Login screen für das Spiel. Bevor man eingeloggt ist.
         if (!isInitialized) {
             return(
             <>
@@ -104,6 +110,9 @@ export class Werbungraten extends React.Component {
             </>
             )
         }else{
+            // Dieser Bereich ist dafür wenn man eingeloggt ist und dann wird weiter evaluiert.
+
+            // Wenn man eingeloggt ist aber das Spiel noch nicht gestartet ist, landet man hier. 
             if (!isIngame) {
             return(
                 <>
@@ -113,11 +122,14 @@ export class Werbungraten extends React.Component {
             )
 
             }else{
-                console.log(currentQuestion)
+                // Wenn das Spiel gestartet ist, dann wird die Game UI geladen.
+                // frage ist das prop für die aktuelle Frage.
+                // Der submithandler wird für die Kommunikation über den Socket übergeben.
+                // Show Question steuert, ob die Frage gezeigt wird oder ob noch gewartet wird.
                return( 
                <>
                <h1>Team: {teamName}!</h1>
-               <GameUI frage={currentQuestion.question} submitHandler={this.submitSocket}></GameUI>
+               <GameUI frage={currentQuestion.question} submitHandler={this.submitSocket} showQuestion={currentQuestion.questionVisible}></GameUI>
                </>
                )
             }

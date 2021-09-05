@@ -32,9 +32,9 @@ io.on('connection', function connection(socket){
     socket.on('joinGame', function(message){
         quizShow.addTeam(new team(message.name, 0, socket.id));
         console.log(socket.id + " is Joining the current Game");
-        // TODO eine Funktion schreiben die handlet, dass die aktuellen Daten an den client gesendet werden.
         console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
         console.log(quizShow.getCurrentQuestion());
+        // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
         socket.emit('loadQuestion',quizShow.getCurrentQuestion());
     });
 
@@ -49,6 +49,10 @@ io.on('connection', function connection(socket){
             socket.disconnect(true);
         }
         
+    });
+
+    socket.on('submit', function(message){
+        console.log(message);
     });
 });
 
