@@ -1,4 +1,5 @@
 const {quizShow} = require('./quizshow');
+const {admin} = require('./admin');
 const {team} = require('./team');
 const express = require('express');
 const app = express();
@@ -23,32 +24,44 @@ const io = require('socket.io')(server,{
 
 // getting the sockets.io ready for takeoff
 io.on('connection', function connection(socket){
-    console.log("-------------------------");
     console.log("Ein neuer Client ist connected");
     console.log("Client ID: " + socket.id);
     console.log("-------------------------");
     socket.send("Connection zum Server gestartet");
 
     socket.on('joinGame', function(message){
-        quizShow.addTeam(new team(message.name, 0, socket.id));
-        console.log(socket.id + " is Joining the current Game");
-        console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
-        console.log(quizShow.getCurrentQuestion());
-        // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
-        socket.emit('loadQuestion',quizShow.getCurrentQuestion());
-    });
+        if (message.name == "Administrator") {
+            // Admin login
+            console.log("Ein Administrator loggt sich ein.");
+            console.log("Client ID: " + socket.id);
+            console.log("-------------------------");
 
-    socket.on('reconnect', function(message){
-        const team = quizShow.getTeambyId(socket.id);
+            // Admin Funktionen Binden an den Socket
+            let newAdmin = new admin(socket,io);
+            newAdmin.bindAdminFunctions();
+            quizShow.addAdmin(newAdmin);
 
-        if (team) {
-            // reconnected also muss irgendwie das game zurücksendet werden
-            // TODO gleiches wie oben. Eine funktion die dem Team die aktuellen Daten schickt.
+            // Disconnect Nachricht
+            socket.once('disconnect',function(){
+                console.log("Admin " + socket.id + " disconnected.");
+                quizShow.deleteAdmin(socket.id);
+            })
         }else{
-            socket.send('Beim Reconnecten ist was schief gelaufen. Versuchs doch mal mit einem reload');
-            socket.disconnect(true);
+            if (quizShow.getTeambyId(socket.id)) {
+                // SEND RECONNECT DATA
+                console.log("reconnect")
+            }else{
+                // Neues Team meldet sich an.
+                quizShow.addTeam(new team(message.name, 0, socket.id));
+                console.log(socket.id + " wurde angelegt.");
+                console.log("-------------------------");
+            }
+            console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
+            console.log(quizShow.getCurrentQuestion().question);
+            console.log("-------------------------");
+            // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
+            socket.emit('loadQuestion',quizShow.getCurrentQuestion());
         }
-        
     });
 
     socket.on('submit', function(message){

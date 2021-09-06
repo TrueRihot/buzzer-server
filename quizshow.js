@@ -11,7 +11,8 @@ const quizShow = {
     activeTeams: [],
     // speichert geladenen Fragens
     questionData : [],
-    
+    // speichert admin connections
+    admins: [],
 
     // Funktion zum laden der Fragedaten
     fetchData: function() {
@@ -35,10 +36,29 @@ const quizShow = {
             newTeam.id = this.activeTeams.length;
             // fügt das neue Team dem Array hinzu.
             this.activeTeams = [...this.activeTeams, newTeam];
-        }else {
-            console.log("Es wurde versucht ein schon existierendes Team einzuloggen.");
         }
+    },
+    // fügt einen neuen Admin zu Liste hinzu
+    addAdmin : function(newAdmin) {
+        const mappedArray =  this.admins.map(function(val){return val.socket.id});
+        if (!mappedArray.includes(newAdmin.socket)) {
+            let inputAdmin = {
+                socket: newAdmin.socket.id,
+                id: this.admins.length
+            }
+            this.admins = [...this.admins, inputAdmin];
+        }
+    },
 
+    delteTeam: function(){
+        //TODO
+    },
+
+    deleteAdmin: function(admin) {
+        const oldAdmins = this.admins;
+        const adminSockets = oldAdmins.map(function(val){ return val.socket.id})
+        const i = adminSockets.indexOf(admin);
+        this.admins.splice(i, 1);
     },
 
     // return the current question

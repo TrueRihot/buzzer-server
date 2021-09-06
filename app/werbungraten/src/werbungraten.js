@@ -10,13 +10,15 @@ export class Werbungraten extends React.Component {
             teamName: "",
             isIngame: true,
             error: "",
-            currentQuestion: {}
+            currentQuestion: {},
+            isAdmin : false
         };
         this.input = React.createRef();
         this.submitHandler = this.submitHandler.bind(this);
         this.throwError = this.throwError.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.submitSocket = this.submitSocket.bind(this);
+        this.quitHandler = this.quitHandler.bind(this);
 
         this.socket = undefined;
     }
@@ -71,7 +73,9 @@ export class Werbungraten extends React.Component {
                 that.setState({currentQuestion: message})
             });
         });
-
+        that.socket.on('loadAdminUI', function(){
+            that.setState({isAdmin: true})
+        })
     }
 
     joinGame() {
@@ -92,6 +96,17 @@ export class Werbungraten extends React.Component {
         // Frage wird abgeschickt zur aktuellen Frage.
         answer.questionIndex = this.state.currentQuestion.index;
         this.socket.emit('submit',answer);
+    }
+
+    quitHandler(){
+        this.setState({
+            isInitialized: false,
+            teamName: "",
+            isIngame: false,
+            error: "",
+            currentQuestion: {},
+            isAdmin : false
+        });
     }
 
     render() {
@@ -117,6 +132,7 @@ export class Werbungraten extends React.Component {
             return(
                 <>
                     <h1>Hallo {teamName}!</h1>
+                    <button onClick={this.quitHandler}>X</button>
                     {!isIngame ? <p>Geht sofort los</p> : <p></p>}
                 </>
             )
@@ -128,8 +144,9 @@ export class Werbungraten extends React.Component {
                 // Show Question steuert, ob die Frage gezeigt wird oder ob noch gewartet wird.
                return( 
                <>
-               <h1>Team: {teamName}!</h1>
-               <GameUI frage={currentQuestion.question} submitHandler={this.submitSocket} showQuestion={currentQuestion.questionVisible}></GameUI>
+               {teamName === "Administrator" ? <h1>Team: {teamName}!</h1>: ""}
+               <button onClick={this.quitHandler}>X</button>
+               <GameUI admin={this.state.isAdmin} frage={currentQuestion.question} submitHandler={this.submitSocket} showQuestion={currentQuestion.questionVisible}></GameUI>
                </>
                )
             }
