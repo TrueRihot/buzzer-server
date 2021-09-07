@@ -15,6 +15,20 @@ export function GameUI (props) {
         return(
             <>
             <h2>Adminkonsole</h2>
+            <p>Frage Nummer: {props.fragenIndex + 1} <strong>{props.frage}</strong>
+            </p>
+            {props.showQuestion ? <strong>Frage ist SICHTBAR</strong> : <strong>Frage ist NICHT Sichtbar</strong>}
+            <button onClick={props.toggleVisibility}>
+                Frage zeigen
+            </button>
+            <button>
+                Countdown Starten
+            </button>
+            
+            <div>
+                <button>Vorherige Frage</button>
+                <button>Nächste Frage</button>
+            </div>
             </>
         )
         

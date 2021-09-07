@@ -2,7 +2,7 @@ const quizShow = {
     // läuft die show schon oder ist noch am launchen
     isRunning : false,
     // Boolean ob die aktuelle Frage schon gezeigt wird oder nicht die
-    questionVisible: true,
+    questionVisible: false,
     // Countdownzeit für die aktuelle Frage
     questionCountdown: 30,
     // speichert die aktuelle Frage
@@ -74,12 +74,23 @@ const quizShow = {
     getTeambyId: function(id) {
         const teams = this.activeTeams;
         let team = teams.map(function(value){
-            value.socket = id ? true : false;
+           return value.socket = id ? true : false;
         });
         if (team.length > 0) {
             return team[0];
         }
         return false
+    },
+
+    // Gibt team mit gegebenem Namen zurück
+    getTeambyName: function(name) {
+        const teams = this.activeTeams;
+        let team = teams.map(function(value){
+           return value.name = name ? true : false;
+        });
+        if (team.length > 0) {
+            return team[0]
+        }
     },
 
     // gibt alle aktuellen Teams zurückgegeben
@@ -103,6 +114,11 @@ const quizShow = {
     // Gibt die aktuelle CountdownClock wieder
     getCurrentTime: function(){
         return this.questionCountdown;
+    },
+
+    // Bekommt den aktuellen Fragenstatus
+    isQuestionVisible(){
+        return this.questionVisible;
     },
 
     // Methode falls alle bereit sind und gestartet wird

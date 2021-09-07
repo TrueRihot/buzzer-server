@@ -40,16 +40,21 @@ io.on('connection', function connection(socket){
             let newAdmin = new admin(socket,io);
             newAdmin.bindAdminFunctions();
             quizShow.addAdmin(newAdmin);
+            socket.emit('loadQuestion',quizShow.getCurrentQuestion());
 
             // Disconnect Nachricht
             socket.once('disconnect',function(){
                 console.log("Admin " + socket.id + " disconnected.");
                 quizShow.deleteAdmin(socket.id);
-            })
+            });
+
         }else{
-            if (quizShow.getTeambyId(socket.id)) {
+
+            if (quizShow.getTeambyId(socket.id) || quizShow.getTeambyName(message.name)) {
                 // SEND RECONNECT DATA
-                console.log("reconnect")
+                // Abfrage um team bei gleichem Namen neue SocketID zu geben.
+                console.log("Team mit id : " + socket.id + " und Namen : " + message.name + " wird reconnected");
+                socket.emit('loadQuestion',quizShow.getCurrentQuestion());
             }else{
                 // Neues Team meldet sich an.
                 quizShow.addTeam(new team(message.name, 0, socket.id));
@@ -62,6 +67,12 @@ io.on('connection', function connection(socket){
             // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
             socket.emit('loadQuestion',quizShow.getCurrentQuestion());
         }
+    });
+
+    socket.on('toggleVisibility', function(){
+        console.log("Frage wird getogglet");
+        quizShow.isQuestionVisible() ? quizShow.questionVisible = false : quizShow.questionVisible = true;
+        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
     });
 
     socket.on('submit', function(message){
