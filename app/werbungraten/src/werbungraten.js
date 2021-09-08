@@ -23,6 +23,7 @@ export class Werbungraten extends React.Component {
         this.quitHandler = this.quitHandler.bind(this);
         this.toggleVisibility = this.toggleVisibility.bind(this);
         this.websocketConnect = this.websocketConnect.bind(this);
+        this.nextQuestion = this.nextQuestion.bind(this);
 
         
     }
@@ -126,6 +127,10 @@ export class Werbungraten extends React.Component {
         this.state.socket.emit('toggleVisibility');
     }
 
+    nextQuestion() {
+        this.state.socket.emit('nextQuestion');
+    }
+
     render() {
         const { isInitialized, teamName, error, currentQuestion, questionVisible } = this.state;
 
@@ -168,7 +173,8 @@ export class Werbungraten extends React.Component {
                         submitHandler={this.submitSocket}
                         showQuestion={questionVisible}
                         fragenIndex={currentQuestion.index}
-                        toggleVisibility={this.toggleVisibility}></GameUI>
+                        toggleVisibility={this.toggleVisibility}
+                        nextQuestion={this.nextQuestion}></GameUI>
                     </>
                 )
             }

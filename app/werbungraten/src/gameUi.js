@@ -27,7 +27,7 @@ export function GameUI (props) {
             
             <div>
                 <button>Vorherige Frage</button>
-                <button>Nächste Frage</button>
+                <button onClick={props.nextQuestion}>Nächste Frage</button>
             </div>
             </>
         )

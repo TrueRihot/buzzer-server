@@ -22,6 +22,24 @@ const io = require('socket.io')(server,{
       }
 });
 
+
+   // Intervall für den Countdown
+   let serverClock = undefined;
+
+   // Intervall funktion
+   let clockFn = function () {
+       if (quizShow.getCurrentTime > 0) {
+           quizShow.countDownTick();
+           io.emit('tick', {tick: quizShow.getCurrentTime()})
+       } else {
+           clearInterval(serverClock);
+       }
+   }
+
+
+
+
+
 // getting the sockets.io ready for takeoff
 io.on('connection', function connection(socket){
     console.log("Ein neuer Client ist connected");
@@ -69,10 +87,42 @@ io.on('connection', function connection(socket){
         }
     });
 
+
+    // Game controls
+    //Sichtbarkeit der Frage togglen
     socket.on('toggleVisibility', function(){
         console.log("Frage wird getogglet");
         quizShow.isQuestionVisible() ? quizShow.questionVisible = false : quizShow.questionVisible = true;
         socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+    });
+
+    // Nächste Frage
+    socket.on('nextQuestion',function(){
+        console.log("Nächste Frage");
+        quizShow.nextQuestion();
+        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+    });
+
+    socket.on('prevQuestion',function(){
+        console.log("Vorherige Frage");
+        quizShow.prevQuestion();
+        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+    });
+
+    // Startet den Countdown
+    socket.on('startCountdown', function(){
+        serverClock = setInterval(clockFn(), 1000)
+    });
+
+    // Stoppt die clock
+    socket.on('stopCountdown', function(){
+        clearInterval(serverClock);
+    });
+
+    // Stoppt und resettet den countdown
+    socket.on('resetCountdown', function(){
+        clearInterval(serverClock);
+        quizShow.countDownReset();
     });
 
     socket.on('submit', function(message){

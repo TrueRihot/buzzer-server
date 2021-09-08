@@ -17,7 +17,7 @@ const quizShow = {
     // Funktion zum laden der Fragedaten
     fetchData: function() {
        console.log('Fetching game data ....');
-       this.questionData = [...this.questionData, {question: "Das ist eine tolle Frage", answer: "Antwort"}];
+       this.questionData = [...this.questionData, {question: "Das ist eine tolle Frage", answer: "Antwort"}, {question:"Das ist die Zweite Frage", answer: "Antwort2"}];
        // Gibt den aktuellen Fragen Ids anhand der array position.
        this.questionData = this.questionData.map(function(value,index){
            value.index = index;
@@ -119,6 +119,20 @@ const quizShow = {
     // Bekommt den aktuellen Fragenstatus
     isQuestionVisible(){
         return this.questionVisible;
+    },
+
+    nextQuestion: function(){
+        //TODO Abfrage ob es keine nächste Frage gibt.
+        this.questionVisible = false;
+        this.currentQuestion++;
+        this.questionCountdown = 30;
+    },
+
+    prevQuestion: function(){
+        //TODO Abfrage ob es keine vorherige Frage gibt
+        this.questionVisible = false;
+        this.currentQuestion--;
+        this.questionCountdown = 30;
     },
 
     // Methode falls alle bereit sind und gestartet wird
