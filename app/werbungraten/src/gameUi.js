@@ -1,47 +1,33 @@
-import { useRef } from 'react';
+import React from 'react';
 
-export function GameUI (props) {
-    const textInput = useRef(null);
+export class GameUI extends React.Component {
 
-    const onClickHandle = (event) =>{
+    constructor(props) {
+        super(props);
+        this.textInput = React.createRef(null);
+        this.onClickHandle = this.onClickHandle.bind(this);
+    }
+    
+
+    onClickHandle = (event) =>{
         event.preventDefault();
-        let input = textInput.current.value;
+        let input = this.textInput.current.value;
         if (input) {
-            props.submitHandler({antwort: input});
+            this.props.submitHandler({antwort: input});
         }
     }
-
-    if (props.admin) {
-        return(
-            <>
-            <h2>Adminkonsole</h2>
-            <p>Frage Nummer: {props.fragenIndex + 1} <strong>{props.frage}</strong>
-            </p>
-            {props.showQuestion ? <strong>Frage ist SICHTBAR</strong> : <strong>Frage ist NICHT Sichtbar</strong>}
-            <button onClick={props.toggleVisibility}>
-                Frage zeigen
-            </button>
-            <button>
-                Countdown Starten
-            </button>
-            
-            <div>
-                <button>Vorherige Frage</button>
-                <button onClick={props.nextQuestion}>Nächste Frage</button>
-            </div>
-            </>
-        )
-        
-    }else{
+    
+    render(){
         return(
             <>
             <h2>Frage:</h2>
-            {props.showQuestion ? <strong>{props.frage}</strong> : <strong></strong>}
+            {this.props.showQuestion ? <strong>{this.props.frage}</strong> : <strong></strong>}
+            <div>{this.props.tick}</div>
             <form>
-                <input type="text" className="input" id="answer" ref={textInput}></input>
-                <button type="submit" className="send-answer" onClick={onClickHandle} >Absenden!</button>
+                <input type="text" className="input" id="answer" ref={this.textInput}></input>
+                <button type="submit" className={ `send-answer ${this.props.tick === 0 || !this.props.showQuestion ? "disabled" : ""}`}  onClick={this.onClickHandle} >Absenden!</button>
             </form>
             </>
         );
-    }
+}
 }   

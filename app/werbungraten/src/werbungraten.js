@@ -1,5 +1,6 @@
 import React from 'react';
 import { io } from 'socket.io-client';
+import { AdminUI } from './adminUI';
 import { GameUI } from './gameUi';
 
 export class Werbungraten extends React.Component {
@@ -13,7 +14,8 @@ export class Werbungraten extends React.Component {
             currentQuestion: {},
             questionVisible: false,
             isAdmin: false,
-            socket: undefined
+            socket: undefined,
+            timer: 30,
         };
         this.input = React.createRef();
         this.submitHandler = this.submitHandler.bind(this);
@@ -21,10 +23,9 @@ export class Werbungraten extends React.Component {
         this.joinGame = this.joinGame.bind(this);
         this.submitSocket = this.submitSocket.bind(this);
         this.quitHandler = this.quitHandler.bind(this);
-        this.toggleVisibility = this.toggleVisibility.bind(this);
         this.websocketConnect = this.websocketConnect.bind(this);
-        this.nextQuestion = this.nextQuestion.bind(this);
-
+      
+        this.adminToolEmitter = this.adminToolEmitter.bind(this);
         
     }
     
@@ -37,7 +38,7 @@ export class Werbungraten extends React.Component {
         if (current) {
             //Opening a new xhr request to push the team name
             let xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:8080/newteam/' + current, true);
+            xhr.open('POST', 'http://192.168.178.52:8080/newteam/' + current, true);
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function () {//Call a function when the state changes.
                 if (xhr.readyState === 4 && xhr.status === 200) {
@@ -67,7 +68,7 @@ export class Werbungraten extends React.Component {
         if (!that.state.socket) {
             // Create WebSocket connection.
             console.log("connecting to websocket")
-            that.state.socket = io("http://localhost:8080");
+            that.state.socket = io("http://192.168.178.52:8080");
 
             // Connection opened
             that.state.socket.on('connect', function () {
@@ -81,8 +82,20 @@ export class Werbungraten extends React.Component {
                     that.setState({ currentQuestion: message, questionVisible: message.questionVisible })
                 });
 
+                // on tick für den Countdown
+                that.state.socket.on('tick', function (message) {
+                    that.setState({ timer: message.tick})
+                })
+
+                // resettet den Timer
+                that.state.socket.on('resetTick', function () {
+                    that.setState({timer: 30})
+                });
+
+                // on Admin ui für admin stuff
                 that.state.socket.on('loadAdminUI', function () {
                 that.setState({ isAdmin: true })
+
             });
             });
             // wenn schon eine Connection besteht
@@ -113,26 +126,26 @@ export class Werbungraten extends React.Component {
     }
 
     quitHandler() {
+        this.state.socket.disconnect();
         this.setState({
             isInitialized: false,
             teamName: "",
             error: "",
             currentQuestion: {},
             questionVisible: false,
-            isAdmin: false
+            isAdmin: false,
+            socket: undefined
         });
     }
-
-    toggleVisibility() {
-        this.state.socket.emit('toggleVisibility');
+    // ab hier die Admin Tools für das Game
+    adminToolEmitter(type){
+        if (type) {
+            this.state.socket.emit(type);
+        }
     }
 
-    nextQuestion() {
-        this.state.socket.emit('nextQuestion');
-    }
-
-    render() {
-        const { isInitialized, teamName, error, currentQuestion, questionVisible } = this.state;
+    render() { 
+        let { isInitialized, teamName, error, currentQuestion, questionVisible } = this.state;
 
         // Login screen für das Spiel. Bevor man eingeloggt ist.
         if (!isInitialized) {
@@ -164,19 +177,39 @@ export class Werbungraten extends React.Component {
                 // frage ist das prop für die aktuelle Frage.
                 // Der submithandler wird für die Kommunikation über den Socket übergeben.
                 // Show Question steuert, ob die Frage gezeigt wird oder ob noch gewartet wird.
-                return (
-                    <>
-                        {teamName !== "Administrator" ? <h1>Team: {teamName}!</h1> : ""}
-                        <button onClick={this.quitHandler}>X</button>
-                        <GameUI admin={this.state.isAdmin}
-                        frage={currentQuestion.question}
-                        submitHandler={this.submitSocket}
-                        showQuestion={questionVisible}
-                        fragenIndex={currentQuestion.index}
-                        toggleVisibility={this.toggleVisibility}
-                        nextQuestion={this.nextQuestion}></GameUI>
-                    </>
-                )
+
+                if (this.state.isAdmin) {
+                    return (
+                        <>
+                        <h1>Adminbereich</h1>
+                         <button onClick={this.quitHandler}>X</button>
+                            <AdminUI
+                                adminToolEmitter={this.adminToolEmitter}
+                                frage={currentQuestion.question}
+                                submitHandler={this.submitSocket}
+                                showQuestion={questionVisible}
+                                message={this.state.message}
+                                fragenIndex={currentQuestion.index}
+                                tick={this.state.timer}
+                            />
+                        </>
+                    )
+
+                } else {
+                    return (
+                        <>
+                        <h1>Hallo team <span>{teamName}</span></h1>
+                         <button onClick={this.quitHandler}>X</button>
+                            <GameUI
+                                frage={currentQuestion.question}
+                                submitHandler={this.submitSocket}
+                                showQuestion={questionVisible}
+                                message={this.state.message}
+                                fragenIndex={currentQuestion.index}
+                                tick={this.state.timer} />
+                        </>
+                    )
+                }
             }
 
         }

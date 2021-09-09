@@ -50,8 +50,12 @@ const quizShow = {
         }
     },
 
-    delteTeam: function(){
-        //TODO
+    delteTeam: function(team){
+        //TODO sollte entweder nicht gelöscht werden oder die Punkte müssen wo anders gespeichert werden.
+        const oldTeams = this.activeTeams;
+        const teamSockets = oldTeams.map(function(val){ return val.socket.id})
+        const i = teamSockets.indexOf(team);
+        this.activeTeams.splice(i, 1);
     },
 
     deleteAdmin: function(admin) {
@@ -122,17 +126,25 @@ const quizShow = {
     },
 
     nextQuestion: function(){
-        //TODO Abfrage ob es keine nächste Frage gibt.
-        this.questionVisible = false;
-        this.currentQuestion++;
-        this.questionCountdown = 30;
+        if (this.questionData.length > this.currentQuestion + 1 ) {
+            this.questionVisible = false;
+            this.currentQuestion++;
+            this.questionCountdown = 30;
+            return
+        }
+        console.log(this.currentQuestion + " ist bereits die letzte Frage.")
+        return false
     },
 
     prevQuestion: function(){
-        //TODO Abfrage ob es keine vorherige Frage gibt
-        this.questionVisible = false;
-        this.currentQuestion--;
-        this.questionCountdown = 30;
+        if (this.currentQuestion >= 1) {
+            this.questionVisible = false;
+            this.currentQuestion--;
+            this.questionCountdown = 30;
+            return
+        }
+        console.log(this.currentQuestion + " ist die erste Frage.")
+        return false
     },
 
     // Methode falls alle bereit sind und gestartet wird

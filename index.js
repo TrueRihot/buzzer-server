@@ -28,10 +28,12 @@ const io = require('socket.io')(server,{
 
    // Intervall funktion
    let clockFn = function () {
-       if (quizShow.getCurrentTime > 0) {
+       console.log(quizShow.getCurrentTime());
+       if (quizShow.getCurrentTime() > 0) {
            quizShow.countDownTick();
            io.emit('tick', {tick: quizShow.getCurrentTime()})
        } else {
+           console.log("Der Countdown für Frage" + quizShow.getCurrentQuestion() + " ist beendet.")
            clearInterval(serverClock);
        }
    }
@@ -82,6 +84,15 @@ io.on('connection', function connection(socket){
             console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
             console.log(quizShow.getCurrentQuestion().question);
             console.log("-------------------------");
+
+
+            // Disconnect Nachricht
+            socket.once('disconnect',function(){
+                console.log("Socket " + socket.id + " disconnected.");
+                quizShow.delteTeam(socket.id);
+            });
+
+
             // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
             socket.emit('loadQuestion',quizShow.getCurrentQuestion());
         }
@@ -93,36 +104,48 @@ io.on('connection', function connection(socket){
     socket.on('toggleVisibility', function(){
         console.log("Frage wird getogglet");
         quizShow.isQuestionVisible() ? quizShow.questionVisible = false : quizShow.questionVisible = true;
-        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+        io.emit('loadQuestion', quizShow.getCurrentQuestion());
     });
 
     // Nächste Frage
     socket.on('nextQuestion',function(){
         console.log("Nächste Frage");
         quizShow.nextQuestion();
-        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+        io.emit('loadQuestion', quizShow.getCurrentQuestion());
+        io.emit('resetTick');
     });
 
+    // Vorherige Frage
     socket.on('prevQuestion',function(){
         console.log("Vorherige Frage");
         quizShow.prevQuestion();
-        socket.broadcast.emit('loadQuestion', quizShow.getCurrentQuestion());
+        io.emit('loadQuestion', quizShow.getCurrentQuestion());
+        io.emit('resetTick');
     });
 
     // Startet den Countdown
     socket.on('startCountdown', function(){
-        serverClock = setInterval(clockFn(), 1000)
+        if (quizShow.getCurrentTime() === 30 ) {
+            console.log("Countdown für Frage " + quizShow.getCurrentQuestion().index + " gestartet.");
+            console.log("-------------------------");
+            serverClock = setInterval(() => {clockFn()}, 1000);
+        }
     });
 
     // Stoppt die clock
     socket.on('stopCountdown', function(){
+        console.log("Countdown für Frage " + quizShow.getCurrentQuestion().index + " gestoppt.");
+        console.log("-------------------------");
         clearInterval(serverClock);
     });
 
     // Stoppt und resettet den countdown
     socket.on('resetCountdown', function(){
+        console.log("Countdown für Frage " + quizShow.getCurrentQuestion().index + " gestoppt UND resettet.");
+        console.log("-------------------------");
         clearInterval(serverClock);
         quizShow.countDownReset();
+        io.emit('resetTick');
     });
 
     socket.on('submit', function(message){
