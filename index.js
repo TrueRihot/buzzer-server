@@ -1,9 +1,10 @@
-const {quizShow} = require('./quizshow');
+let {quizShow} = require('./quizshow');
 const {admin} = require('./admin');
 const {team} = require('./team');
 const express = require('express');
 const app = express();
 const Cors = require('cors');
+const { disconnect } = require('process');
 
 app.use( express.json() );
 app.use(Cors({
@@ -70,29 +71,40 @@ io.on('connection', function connection(socket){
 
         }else{
 
-            if (quizShow.getTeambyId(socket.id) || quizShow.getTeambyName(message.name)) {
-                // SEND RECONNECT DATA
-                // Abfrage um team bei gleichem Namen neue SocketID zu geben.
-                console.log("Team mit id : " + socket.id + " und Namen : " + message.name + " wird reconnected");
-                socket.emit('loadQuestion',quizShow.getCurrentQuestion());
+            // Abfrage ob es den Namen bereits gibt
+            let hasQuizName = quizShow.activeTeams.find(o => o.name === message.name);
+
+            if (hasQuizName) {
+                let index = quizShow.activeTeams.indexOf(hasQuizName)
+                if (!quizShow.activeTeams[index].socket) {
+                    // Wenn das Team nicht bereits einen Zugewiesenen Socket hat dann joine diesem team
+                    quizShow.activeTeams[index].socket = socket.id; 
+                    console.log(socket.id + " wurde Team " + quizShow.activeTeams[index].name + " zugewiesen");
+                }else {
+                    console.log( socket.id + " hat sicher versucht in ein bereits benutztes Team einzuloggen und wird disconnected");
+                    socket.emit("teamInUse");
+                }
+
             }else{
-                // Neues Team meldet sich an.
-                quizShow.addTeam(new team(message.name, 0, socket.id));
-                console.log(socket.id + " wurde angelegt.");
-                console.log("-------------------------");
+            // Neues Team meldet sich an.
+            quizShow.addTeam(new team(message.name, 0, socket.id));
+            console.log(socket.id + " wurde angelegt.");
+            console.log("-------------------------");
             }
+
+            // Disconnect Nachricht
+            socket.on('disconnect',function(){
+                console.log("Socket " + socket.id + " disconnected.");
+                console.log("-------------------------");
+                let indexOfTeam = quizShow.activeTeams.findIndex(o => o.socket === socket.id);
+                if(indexOfTeam > -1){
+                    quizShow.activeTeams[indexOfTeam].socket = undefined;
+                }
+            });
+
             console.log('Schicke ' + socket.id + 'die aktuelle Frage:');
             console.log(quizShow.getCurrentQuestion().question);
             console.log("-------------------------");
-
-
-            // Disconnect Nachricht
-            socket.once('disconnect',function(){
-                console.log("Socket " + socket.id + " disconnected.");
-                quizShow.delteTeam(socket.id);
-            });
-
-
             // loadQuestion -- braucht ein object mit der Frage und wird beim client später displayed
             socket.emit('loadQuestion',quizShow.getCurrentQuestion());
         }

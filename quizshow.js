@@ -1,4 +1,4 @@
-const quizShow = {
+let quizShow = {
     // läuft die show schon oder ist noch am launchen
     isRunning : false,
     // Boolean ob die aktuelle Frage schon gezeigt wird oder nicht die
@@ -27,15 +27,15 @@ const quizShow = {
     },
 
     // Ein neues Team wird dem Spiel hinzugefügt
-    addTeam: function(newTeam) {
-        const mappedArray =  this.activeTeams.map(function(val){return val.name});
-
+    addTeam: function(newTeam) {    
         // Check ob es schon ein Team im Feld mit dem Namen gibt.
-        if (!mappedArray.includes(newTeam.name)) {
+        var obj = this.activeTeams.find(o => o.name === newTeam.name);
+        if (!obj) {
             // gibt dem Team eine unique ID anhand der Platzierung im Team array
             newTeam.id = this.activeTeams.length;
             // fügt das neue Team dem Array hinzu.
-            this.activeTeams = [...this.activeTeams, newTeam];
+            this.activeTeams.push(newTeam);
+            console.log(this.activeTeams);
         }
     },
     // fügt einen neuen Admin zu Liste hinzu

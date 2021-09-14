@@ -95,8 +95,25 @@ export class Werbungraten extends React.Component {
                 // on Admin ui für admin stuff
                 that.state.socket.on('loadAdminUI', function () {
                 that.setState({ isAdmin: true })
+                });
 
-            });
+                that.state.socket.on('disconnect', function () {
+                    console.log('Disconnected')
+                });
+
+                that.state.socket.on('teamInUse', function (){
+                    that.state.socket.disconnect();
+                    that.setState({
+                        isInitialized: false,
+                        teamName: "",
+                        error: "Team ist bereits ingame",
+                        currentQuestion: {},
+                        questionVisible: false,
+                        isAdmin: false,
+                        socket: undefined
+                    });
+                });
+
             });
             // wenn schon eine Connection besteht
         }else if (that.state.socket.connected) {
