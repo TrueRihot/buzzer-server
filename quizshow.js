@@ -21,6 +21,7 @@ let quizShow = {
        // Gibt den aktuellen Fragen Ids anhand der array position.
        this.questionData = this.questionData.map(function(value,index){
            value.index = index;
+           value.answers = [];
            return value;
        });
        console.log(this.questionData.length + " Fragen geladen");
@@ -97,9 +98,9 @@ let quizShow = {
         }
     },
 
-    // gibt alle aktuellen Teams zurückgegeben
-    getTeams: function() {
-        return this.activeTeams
+    getTeamNameById: function(id) {
+        var obj = this.activeTeams.find(o => o.socket === id);
+        return obj.name
     },
 
     // Clock für die Ticks wird in index.js ausgeführt, für den Socket

@@ -4,16 +4,33 @@ export class GameUI extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            sent: false,
+            error: ""
+        }
         this.textInput = React.createRef(null);
         this.onClickHandle = this.onClickHandle.bind(this);
     }
     
 
-    onClickHandle = (event) =>{
+    onClickHandle = (event) => {
         event.preventDefault();
-        let input = this.textInput.current.value;
-        if (input) {
-            this.props.submitHandler({antwort: input});
+        this.setState({error: ""})
+        if (!this.state.sent && this.props.tick > 0 && this.props.showQuestion) {
+            let input = this.textInput.current.value;
+            if (input) {
+                this.props.submitHandler({ antwort: input });
+                this.setState({sent: true})
+                this.textInput.current.value = "";
+            }
+        }else{
+            this.setState({error: "Du kannst gerade keine Frage absenden!"})
+        }
+    }
+
+    componentDidUpdate(prevProps){
+        if (this.props.frage !== prevProps.frage) {
+            this.setState({sent: false, error: ""});
         }
     }
     
@@ -26,6 +43,7 @@ export class GameUI extends React.Component {
             <form>
                 <input type="text" className="input" id="answer" ref={this.textInput}></input>
                 <button type="submit" className={ `send-answer ${this.props.tick === 0 || !this.props.showQuestion ? "disabled" : ""}`}  onClick={this.onClickHandle} >Absenden!</button>
+                <div>{this.state.error}</div>
             </form>
             </>
         );

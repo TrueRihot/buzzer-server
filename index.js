@@ -34,7 +34,7 @@ const io = require('socket.io')(server,{
            quizShow.countDownTick();
            io.emit('tick', {tick: quizShow.getCurrentTime()})
        } else {
-           console.log("Der Countdown für Frage" + quizShow.getCurrentQuestion() + " ist beendet.")
+           console.log("Der Countdown für Frage" + quizShow.getCurrentQuestion().frage + " ist beendet.")
            clearInterval(serverClock);
        }
    }
@@ -124,6 +124,8 @@ io.on('connection', function connection(socket){
         console.log("Nächste Frage");
         quizShow.nextQuestion();
         io.emit('loadQuestion', quizShow.getCurrentQuestion());
+        clearInterval(serverClock);
+        quizShow.countDownReset();
         io.emit('resetTick');
     });
 
@@ -132,6 +134,8 @@ io.on('connection', function connection(socket){
         console.log("Vorherige Frage");
         quizShow.prevQuestion();
         io.emit('loadQuestion', quizShow.getCurrentQuestion());
+        clearInterval(serverClock);
+        quizShow.countDownReset();
         io.emit('resetTick');
     });
 
@@ -160,8 +164,19 @@ io.on('connection', function connection(socket){
         io.emit('resetTick');
     });
 
+    // Anwtort Submission handling
     socket.on('submit', function(message){
-        console.log(message);
+        let currentQuestion = quizShow.questionData[message.questionIndex];
+        let antwort = message;
+
+        antwort.team = quizShow.getTeamNameById(socket.id);
+        antwort.tick = quizShow.getCurrentTime();
+        antwort.correct = undefined;
+        currentQuestion.answers.push(antwort);
+
+        console.log(socket.id + " hat eine Frage abgegeben");
+        io.emit('adminNewAnswer', {answers: quizShow.getCurrentQuestion().answers});
+        console.dir(quizShow.getCurrentQuestion().answers)
     });
 });
 

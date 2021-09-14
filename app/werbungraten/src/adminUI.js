@@ -6,6 +6,15 @@ export class AdminUI extends React.Component {
         
     }
 
+    renderAnswers(){
+        let antworten = this.props.answers;
+        let ret = []
+        antworten.forEach(function(answer){ 
+            ret.push(<li>{answer.team} =&gt; {answer.antwort} {answer.tick}</li>)
+        });
+        return ret
+    }
+
     render() {
         return(
             <>
@@ -26,6 +35,10 @@ export class AdminUI extends React.Component {
             <div>
                 <button onClick={() => this.props.adminToolEmitter('prevQuestion')}>Vorherige Frage</button>
                 <button onClick={() => this.props.adminToolEmitter("nextQuestion")}>Nächste Frage</button>
+            </div>
+            <div>
+                <h3>Antworten</h3>
+                <ul>{this.renderAnswers()}</ul>
             </div>
             </>
         )
