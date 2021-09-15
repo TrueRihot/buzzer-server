@@ -164,6 +164,14 @@ io.on('connection', function connection(socket){
         io.emit('resetTick');
     });
 
+    socket.on('answerCorrect', function(message){
+        quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct = true;
+    });
+
+    socket.on('answerCorrect', function(message){
+        quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct = false;
+    });
+
     // Anwtort Submission handling
     socket.on('submit', function(message){
         let currentQuestion = quizShow.questionData[message.questionIndex];

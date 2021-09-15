@@ -1,16 +1,20 @@
 import React from 'react';
+import {Answers} from './answers';
 
 export class AdminUI extends React.Component {
     constructor(props) {
         super(props);
         
+        this.renderAnswers = this.renderAnswers.bind(this);
     }
+
 
     renderAnswers(){
         let antworten = this.props.answers;
         let ret = []
+        let that = this;
         antworten.forEach(function(answer){ 
-            ret.push(<li>{answer.team} =&gt; {answer.antwort} {answer.tick}</li>)
+            ret.push(<Answers answer={answer} adminToolEmitter={that.props.adminToolEmitter}/>)
         });
         return ret
     }

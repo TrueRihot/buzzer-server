@@ -30,7 +30,6 @@ export class Werbungraten extends React.Component {
         
     }
     
-
     submitHandler = (e) => {
         //Handling the Login process of the app
         const that = this;
@@ -80,7 +79,7 @@ export class Werbungraten extends React.Component {
                 that.setState({ isInitialized: true });
                 // Wenn eine neue Frage geladen wird, wird sie im state gespeichert.
                 that.state.socket.on("loadQuestion", function (message) {
-                    that.setState({ currentQuestion: message, questionVisible: message.questionVisible })
+                    that.setState({ currentQuestion: message, questionVisible: message.questionVisible, answers: message.answers })
                 });
 
                 // on tick für den Countdown
@@ -163,9 +162,11 @@ export class Werbungraten extends React.Component {
         });
     }
     // ab hier die Admin Tools für das Game
-    adminToolEmitter(type){
-        if (type) {
+    adminToolEmitter(type, msg){
+        if (!msg) {
             this.state.socket.emit(type);
+        }else{
+            this.state.socket.emit(type,msg);
         }
     }
 
