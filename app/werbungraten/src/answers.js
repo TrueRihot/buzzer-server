@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export function Answers(props) {
-    const [isCorrect, toggleCorrect] = useState(undefined);
+    const [isCorrect, toggleCorrect] = useState(props.answer.correct);
 
     let emitToggle = (input) =>{
         let emit = undefined
