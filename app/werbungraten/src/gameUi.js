@@ -37,10 +37,12 @@ export class GameUI extends React.Component {
     render(){
         return(
             <>
-            <h2>Frage:</h2>
-            {this.props.showQuestion ? <strong>{this.props.frage}</strong> : <strong></strong>}
-            <div>{this.props.tick}</div>
-            <form>
+            <h3>Frage:</h3>
+            <div className="question-tick">
+                {this.props.showQuestion ? <strong>{this.props.frage}</strong> : <strong></strong>}
+                <div className="tick">{this.props.tick}</div>
+            </div>
+            <form className="flex flex-wrap input-button">
                 <input type="text" className="input" id="answer" ref={this.textInput}></input>
                 <button type="submit" className={ `send-answer ${this.props.tick === 0 || !this.props.showQuestion ? "disabled" : ""}`}  onClick={this.onClickHandle} >Absenden!</button>
                 <div>{this.state.error}</div>

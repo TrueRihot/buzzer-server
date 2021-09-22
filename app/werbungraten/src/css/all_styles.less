@@ -1,0 +1,163 @@
+@jet: ~"#333533";
+@jetlight: ~"hsl(120, 2%, 40%)";
+@blackish: ~"#242423";
+@yelp: ~"#F5CB5C";
+@light: ~"#E8EDDF";
+@darker: ~"#CFDBD5";
+
+@font-face {
+    font-family: 'Roboto';
+    src: url("../fonts/Roboto-Regular.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+*{
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: @darker;
+    color: @blackish;
+    padding: 2rem;
+}
+
+.flex{
+    display: flex;
+}
+
+.flex-spacing{
+  gap: 1rem;
+  & *{
+    margin: 0;
+  }
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+
+h1,h2 {
+    margin-bottom: 1.5rem;
+}
+
+.control-element {
+    margin: 1rem 0;
+}
+
+
+button{
+    cursor: pointer;
+    padding: 0.3rem 0.4rem;
+    background-color: @jet;
+    color: @yelp;
+    border: none;
+    border-radius: 2px;
+    margin: .5rem 0;
+    min-height: 2.5rem;
+    min-width: 2rem;
+    transition: background-color .2s ease-in-out;
+    font-size: 1.2rem;
+
+    &:not(.disabled):hover {
+        background-color: @yelp;
+        color: @jet;
+    }
+}
+
+input {
+    height: 2rem;
+    padding: 0 .5rem;
+}
+
+
+
+.input-button{
+    justify-content: center;
+    position: relative;
+    input {
+        flex: 0 1 100%;
+    }
+
+    button {
+        flex: 0 1 100%;
+    }
+
+}
+
+button.quit {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    border-radius: 4px;
+}
+
+button.disabled{
+    background-color: @jetlight;
+    cursor:not-allowed;
+    &:hover{
+        & + .tooltip{
+            pointer-events: auto;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+span.important {
+    background-color: @yelp;
+    display: block;
+    text-align: center;
+    padding: 0.5rem;
+    margin: .5rem 0;
+}
+
+.question-tick {
+    position: relative;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    background-color: @yelp;
+    min-height: 67px;
+   
+    .tick {
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translate(-50%, -50%);
+        font-size: larger;
+        color: @yelp;
+        text-align: center;
+        min-width: 2ch;
+        &:before {
+            z-index: -1;
+            content: "";
+            position:absolute;
+            transform: translate(-50%, -50%);
+            left: 10px;
+            top: 10px;
+            display: block;
+            height: calc(100% + 30px);
+            width: calc(100% + 30px);
+            background-color: @jet;
+            border-radius: 10000px;
+            border: 10px solid @darker;
+        }
+    }
+}
+
+
+.tooltip {
+    display: block;
+    position: absolute;
+    background: white;
+    padding: 0.5rem 0.8rem;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(2rem);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}

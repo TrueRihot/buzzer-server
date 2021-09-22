@@ -166,10 +166,12 @@ io.on('connection', function connection(socket){
 
     socket.on('answerCorrect', function(message){
         quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct = true;
+        console.log(quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct);
     });
 
-    socket.on('answerCorrect', function(message){
+    socket.on('answerFalse', function(message){
         quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct = false;
+        console.log(quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct);
     });
 
     // Anwtort Submission handling

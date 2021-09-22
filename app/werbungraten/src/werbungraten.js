@@ -2,6 +2,7 @@ import React from 'react';
 import { io } from 'socket.io-client';
 import { AdminUI } from './adminUI';
 import { GameUI } from './gameUi';
+import "./css/all_styles.css"
 
 export class Werbungraten extends React.Component {
 
@@ -178,7 +179,7 @@ export class Werbungraten extends React.Component {
             return (
                 <>
                     <h1>Willkommen bei Werbungraten</h1>
-                    <form>
+                    <form className="flex flex-wrap input-button">
                         <input type="text" placeholder="Teamname" ref={this.input}></input>
                         <div>{error ? error : ""}</div>
                         <button type="submit" onClick={this.submitHandler}>GO!</button>
@@ -193,7 +194,7 @@ export class Werbungraten extends React.Component {
                 return (
                     <>
                         <h1>Hallo {teamName}!</h1>
-                        <button onClick={this.quitHandler}>X</button>
+                        <button className="quit" onClick={this.quitHandler}>X</button>
                         {currentQuestion === {} ? <p>Geht sofort los</p> : <p></p>}
                     </>
                 )
@@ -207,8 +208,7 @@ export class Werbungraten extends React.Component {
                 if (this.state.isAdmin) {
                     return (
                         <>
-                        <h1>Adminbereich</h1>
-                         <button onClick={this.quitHandler}>X</button>
+                         <button className="quit" onClick={this.quitHandler}>X</button>
                             <AdminUI
                                 adminToolEmitter={this.adminToolEmitter}
                                 frage={currentQuestion.question}
@@ -225,8 +225,8 @@ export class Werbungraten extends React.Component {
                 } else {
                     return (
                         <>
-                        <h1>Hallo team <span>{teamName}</span></h1>
-                         <button onClick={this.quitHandler}>X</button>
+                        <h2><span className="">Team: {teamName}</span></h2>
+                         <button className="quit" onClick={this.quitHandler}>X</button>
                             <GameUI
                                 frage={currentQuestion.question}
                                 submitHandler={this.submitSocket}

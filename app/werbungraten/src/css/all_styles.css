@@ -1,0 +1,131 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url("../fonts/Roboto-Regular.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+* {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background-color: #CFDBD5;
+  color: #242423;
+  padding: 2rem;
+}
+.flex {
+  display: flex;
+}
+.flex-spacing {
+  gap: 1rem;
+}
+.flex-spacing * {
+  margin: 0;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+h1,
+h2 {
+  margin-bottom: 1.5rem;
+}
+.control-element {
+  margin: 1rem 0;
+}
+button {
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  background-color: #333533;
+  color: #F5CB5C;
+  border: none;
+  border-radius: 2px;
+  margin: 0.5rem 0;
+  min-height: 2.5rem;
+  min-width: 2rem;
+  transition: background-color 0.2s ease-in-out;
+  font-size: 1.2rem;
+}
+button:not(.disabled):hover {
+  background-color: #F5CB5C;
+  color: #333533;
+}
+input {
+  height: 2rem;
+  padding: 0 0.5rem;
+}
+.input-button {
+  justify-content: center;
+  position: relative;
+}
+.input-button input {
+  flex: 0 1 100%;
+}
+.input-button button {
+  flex: 0 1 100%;
+}
+button.quit {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  border-radius: 4px;
+}
+button.disabled {
+  background-color: hsl(120, 2%, 40%);
+  cursor: not-allowed;
+}
+button.disabled:hover + .tooltip {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+span.important {
+  background-color: #F5CB5C;
+  display: block;
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+.question-tick {
+  position: relative;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  background-color: #F5CB5C;
+  min-height: 67px;
+}
+.question-tick .tick {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, -50%);
+  font-size: larger;
+  color: #F5CB5C;
+  text-align: center;
+  min-width: 2ch;
+}
+.question-tick .tick:before {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 10px;
+  top: 10px;
+  display: block;
+  height: calc(100% + 30px);
+  width: calc(100% + 30px);
+  background-color: #333533;
+  border-radius: 10000px;
+  border: 10px solid #CFDBD5;
+}
+.tooltip {
+  display: block;
+  position: absolute;
+  background: white;
+  padding: 0.5rem 0.8rem;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2rem);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
