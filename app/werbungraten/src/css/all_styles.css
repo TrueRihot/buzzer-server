@@ -45,6 +45,7 @@ button {
   min-width: 2rem;
   transition: background-color 0.2s ease-in-out;
   font-size: 1.2rem;
+  outline: none;
 }
 button:not(.disabled):hover {
   background-color: #F5CB5C;
@@ -128,4 +129,108 @@ span.important {
   pointer-events: none;
   transform: translateY(2rem);
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.data-table {
+  margin: 1rem 0;
+}
+.data-table th {
+  text-align: left;
+  padding: 0.5rem;
+}
+.data-table td {
+  padding: 0.5rem;
+}
+.data-table .result-button + .result-button {
+  margin-left: 0.25rem;
+}
+.overlay {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  top: 50%;
+  left: 50%;
+  padding: 2rem;
+  background: #CFDBD5;
+  border-radius: 2rem;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transform: translate(-50%, -45%);
+  box-shadow: 0px 0px 2rem 0px rgba(0, 0, 0, 0.4);
+}
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.overlay.hidden .team-graph {
+  transform: translate(0, 10%);
+  opacity: 0;
+}
+.overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+.overlay.active .team-graph {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+.overlay .auswertung {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.overlay .auswertung .names {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: left;
+  align-items: flex-end;
+  margin-top: 1.5rem;
+}
+.overlay .auswertung .graphs {
+  width: 100%;
+  flex: 1 0 auto;
+  position: relative;
+  flex-wrap: nowrap;
+  display: flex;
+  gap: 50px;
+  align-items: flex-end;
+  padding: 2rem 0;
+  overflow: hidden;
+}
+.overlay-team-points {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.overlay-team-points + .overlay-team-points {
+  margin-left: 1rem;
+}
+.overlay-team {
+  font-weight: 600;
+  font-size: 160%;
+  color: #242423;
+  flex: 0 0 auto;
+}
+.overlay-points {
+  font-weight: lighter;
+  font-size: 300%;
+  margin-top: 0.5rem;
+  position: relative;
+  flex: 0 0 auto;
+  color: #F5CB5C;
+}
+.overlay-graph {
+  display: block;
+  flex: 0 0 10%;
+  width: 100%;
+  position: absolute;
+}
+.team-graph {
+  display: block;
+  text-align: center;
+  background-color: hsl(120, 2%, 40%);
+  height: 0;
+  flex: 1 0 40px;
+  padding: 0.5rem;
+  transition: transform 1s ease-in-out 0.4s, opacity 1.2s ease-in-out 0.3s;
 }

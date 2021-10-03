@@ -4,7 +4,6 @@ const {team} = require('./team');
 const express = require('express');
 const app = express();
 const Cors = require('cors');
-const { disconnect } = require('process');
 
 app.use( express.json() );
 app.use(Cors({
@@ -173,6 +172,16 @@ io.on('connection', function connection(socket){
         quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct = false;
         console.log(quizShow.questionData[message.answerIndex].answers.find(o => o.team === message.team).correct);
     });
+
+    socket.on("saveData", function(){
+        quizShow.saveData();
+    });
+
+    socket.on("showData", function(){
+        let ret =  quizShow.getAuswertung();
+        socket.emit("showAuswertung", {auswertung: ret})
+    });
+
 
     // Anwtort Submission handling
     socket.on('submit', function(message){

@@ -18,8 +18,16 @@ export function Answers(props) {
         toggleCorrect(input);
     }
 
-    return (<li>{props.answer.team} =&gt; {props.answer.antwort} {props.answer.tick} {isCorrect ? "Richtig" : "Falsch"}
-    <button onClick={() => emitToggle(true)}>Richtig</button>
-    <button onClick={() => emitToggle(false)}>Falsch</button> </li>
+    return (
+    <tr key={props.answer.team}>
+        <td>{props.answer.team}</td>
+        <td>{props.answer.antwort}</td>
+        <td>{props.answer.tick}</td>
+        <td>{isCorrect ? "Richtig" : "Falsch"}</td>
+        <td>
+            <button onClick={() => emitToggle(true)} className="result-button">Richtig</button>
+            <button onClick={() => emitToggle(false)}className="result-button">Falsch</button>
+        </td>
+     </tr>
     )
 }

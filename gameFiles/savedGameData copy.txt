@@ -1,0 +1,1 @@
+[{"question":"Das ist eine tolle Frage","answer":"Antwort","index":0,"answers":[{"antwort":"asd ae sd asdasd","questionIndex":0,"team":"asd asdasd","tick":27,"correct":true}],"questionVisible":true},{"question":"Das ist die Zweite Frage","answer":"Antwort2","index":1,"answers":[]}]

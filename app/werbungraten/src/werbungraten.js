@@ -17,7 +17,8 @@ export class Werbungraten extends React.Component {
             isAdmin: false,
             socket: undefined,
             timer: 30,
-            answers: []
+            answers: [],
+            showData: []
         };
         this.input = React.createRef();
         this.submitHandler = this.submitHandler.bind(this);
@@ -26,9 +27,7 @@ export class Werbungraten extends React.Component {
         this.submitSocket = this.submitSocket.bind(this);
         this.quitHandler = this.quitHandler.bind(this);
         this.websocketConnect = this.websocketConnect.bind(this);
-      
-        this.adminToolEmitter = this.adminToolEmitter.bind(this);
-        
+        this.adminToolEmitter = this.adminToolEmitter.bind(this); 
     }
     
     submitHandler = (e) => {
@@ -86,6 +85,9 @@ export class Werbungraten extends React.Component {
                 // on tick für den Countdown
                 that.state.socket.on('tick', function (message) {
                     that.setState({ timer: message.tick})
+                    if (message.tick < 10) {
+                        navigator.vibrate(200);
+                    }
                 })
 
                 // resettet den Timer
@@ -112,13 +114,20 @@ export class Werbungraten extends React.Component {
                         questionVisible: false,
                         isAdmin: false,
                         socket: undefined,
-                        answers: []
+                        answers: [],
+                        showData: []
                     });
                 });
 
                 that.state.socket.on('adminNewAnswer',function (message) {
                     that.setState({answers: message.answers})
                     console.log('setting Answers' + message.answers)
+                });
+
+                that.state.socket.on('showAuswertung', function (message) {
+                    that.setState({
+                        showData: message.auswertung
+                    })
                 });
 
             });
@@ -159,7 +168,8 @@ export class Werbungraten extends React.Component {
             questionVisible: false,
             isAdmin: false,
             socket: undefined,
-            answers: []
+            answers: [],
+            showData: []
         });
     }
     // ab hier die Admin Tools für das Game
@@ -218,6 +228,7 @@ export class Werbungraten extends React.Component {
                                 fragenIndex={currentQuestion.index}
                                 tick={this.state.timer}
                                 answers={this.state.answers}
+                                auswertung={this.state.showData}
                             />
                         </>
                     )

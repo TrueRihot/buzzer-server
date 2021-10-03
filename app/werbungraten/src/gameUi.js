@@ -44,7 +44,7 @@ export class GameUI extends React.Component {
             </div>
             <form className="flex flex-wrap input-button">
                 <input type="text" className="input" id="answer" ref={this.textInput}></input>
-                <button type="submit" className={ `send-answer ${this.props.tick === 0 || !this.props.showQuestion ? "disabled" : ""}`}  onClick={this.onClickHandle} >Absenden!</button>
+                <button type="submit" className={ `send-answer ${this.props.tick === 0 || !this.props.showQuestion || this.state.sent ? "disabled" : ""}`}  onClick={this.onClickHandle} >Absenden!</button>
                 <div>{this.state.error}</div>
             </form>
             </>

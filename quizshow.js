@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 let quizShow = {
     // läuft die show schon oder ist noch am launchen
     isRunning : false,
@@ -15,16 +17,43 @@ let quizShow = {
     admins: [],
 
     // Funktion zum laden der Fragedaten
-    fetchData: function() {
-       console.log('Fetching game data ....');
-       this.questionData = [...this.questionData, {question: "Das ist eine tolle Frage", answer: "Antwort"}, {question:"Das ist die Zweite Frage", answer: "Antwort2"}];
-       // Gibt den aktuellen Fragen Ids anhand der array position.
-       this.questionData = this.questionData.map(function(value,index){
-           value.index = index;
-           value.answers = [];
-           return value;
-       });
-       console.log(this.questionData.length + " Fragen geladen");
+    fetchData: function () {
+        console.log('Fetching game data ....');
+        fs.readFile('./gameFiles/savedGameData.txt', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err)
+                return
+            }
+
+            try {
+                this.questionData = JSON.parse(data)
+            } catch (error) {
+                console.log("Konnte keine Game Data laden, lade dummy Daten");
+                console.log(error);
+                this.questionData = [...this.questionData, { question: "Das ist eine tolle Frage", answer: "Antwort" }, { question: "Das ist die Zweite Frage", answer: "Antwort2" }];
+                // Gibt den aktuellen Fragen Ids anhand der array position.
+                this.questionData = this.questionData.map(function (value, index) {
+                    value.index = index;
+                    value.answers = [];
+                    return value;
+                });
+            }
+
+            console.log(this.questionData.length + " Fragen geladen");
+            console.log("Fetching done");
+        })
+    },
+
+    saveData: function() {
+        const dataString = JSON.stringify(this.questionData);
+        fs.writeFile("./gameFiles/savedGameData.txt",dataString,(err)=>{
+            if(err){
+                console.log('error   ' + err)
+            }else{
+                console.log("JSON data is saved.");
+            }
+            
+        });
     },
 
     // Ein neues Team wird dem Spiel hinzugefügt
@@ -34,7 +63,7 @@ let quizShow = {
         if (!obj) {
             // gibt dem Team eine unique ID anhand der Platzierung im Team array
             newTeam.id = this.activeTeams.length;
-            // fügt das neue Team dem Array hinzu.
+            // fügt das neue Team dem Array hinzu
             this.activeTeams.push(newTeam);
             console.log(this.activeTeams);
         }
@@ -146,6 +175,36 @@ let quizShow = {
         }
         console.log(this.currentQuestion + " ist die erste Frage.")
         return false
+    },
+
+    getAuswertung: function(){
+        //speichert die Punkte aller Teams
+        let ret = [];
+        let answers = [];
+
+        this.questionData.forEach(function(value, key){
+            if (value.answers.length > 0) {
+                answers.push(value.answers)
+            }
+        });
+
+        answers.forEach(function (value) {
+            value.forEach(element => {
+                if (element.correct) {
+                    let key = element.team;
+                    if (!ret.some(e => e.team === key)) {
+                        ret.push({
+                            team: key,
+                            points: element.tick,
+                            correct: element.correct
+                        })
+                    } else {
+                        ret.find(x => x.team === key).points += element.tick;
+                    }
+                }
+            });
+        });
+        return ret
     },
 
     // Methode falls alle bereit sind und gestartet wird
