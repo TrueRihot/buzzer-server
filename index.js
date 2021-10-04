@@ -4,7 +4,10 @@ const {team} = require('./team');
 const express = require('express');
 const app = express();
 const Cors = require('cors');
+const path = require('path');
 
+
+app.use(express.static(path.join(__dirname, 'build')));
 app.use( express.json() );
 app.use(Cors({
     origin: "*"
@@ -206,6 +209,10 @@ app.post("/newteam/:name",(req, res) => {
         console.log(err)
         res.status(409).send("Das angegebene Team gibt es bereits.")
     }
+});
+
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 
